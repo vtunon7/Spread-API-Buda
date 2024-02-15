@@ -1,6 +1,6 @@
 import axios from "axios";
 import { budaURL } from "../config";
-import { fetchMarketIds } from "../services/market";
+import { fetchMarketIds } from "../services/marketService";
 
 let cachedMarketIds: string[];
 

@@ -1,11 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import { setInterval } from "timers";
-import { getSpread, getSpreads } from "./controllers/spread";
-import { saveAlert } from "./services/alert";
-import { checkAlerts, checkAlert } from "./controllers/alert";
+import { getSpread, getSpreads } from "./controllers/spreadController";
+import { saveAlert } from "./services/alertService";
+import { checkAlerts, checkAlert } from "./controllers/alertController";
 import { validateMarketId, validateSaveAlert } from "./middleware/validation";
-import { calculateSpreads } from "./services/market";
+import { calculateSpreads } from "./services/marketService";
 
 const app = express();
 const port = 3000;
