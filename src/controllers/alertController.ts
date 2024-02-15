@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
-import { alertSpreads } from "../services/alert";
-import { calculateSpreads } from "../services/market";
-import { calculateSpread } from "../utils/calculateSpread";
-import { fetchMarketOrderBooksCached } from "../utils/cache";
-import { spread } from "axios";
+import { alertSpreads } from "../services/alertService";
+import { calculateSpreads, getMarketSpread } from "../services/marketService";
 
 export async function checkAlerts(req: Request, res: Response) {
   try {
@@ -20,37 +17,34 @@ export async function checkAlerts(req: Request, res: Response) {
     }
     res.status(200).json(alertStatus);
   } catch (error) {
-    res.status(500).json({ message: "Error checking alert status" });
+    sendErrorResponse(res, 500, "Error checking alert status");
   }
 }
 
 export async function checkAlert(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const orderBook = await fetchMarketOrderBooksCached(id);
-    if (!orderBook) {
-      return sendErrorResponse(res, 500, "Error fetching order book");
+    const spread = await getMarketSpread(id);
+    if (spread === undefined) {
+      return sendErrorResponse(
+        res,
+        500,
+        "Error fetching or calculating spread"
+      );
     }
-
-    const spread = calculateSpread(orderBook as Record<string, string[]>);
-    if (!spread) {
-      return sendErrorResponse(res, 500, "Error calculating spread");
-    }
-
     const alertSpread = alertSpreads[id];
     if (alertSpread === undefined) {
-      return sendErrorResponse(res, 200, "No alert spread set for this market");
+      return sendErrorResponse(res, 400, "No alert spread set for this market");
     }
-
     const alertMessage = getAlertMessage(spread, alertSpread);
-    return res.status(200).json({ [id]: alertMessage });
+    res.status(200).json({ [id]: alertMessage });
   } catch (error) {
-    return sendErrorResponse(res, 500, "Error checking alert status");
+    sendErrorResponse(res, 500, "Error checking alert status");
   }
 }
 
 function sendErrorResponse(res: Response, status: number, message: string) {
-  return res.status(status).json({ message });
+  res.status(status).json({ message });
 }
 
 function getAlertMessage(spread: number, alertSpread: number | undefined) {
