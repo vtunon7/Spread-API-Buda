@@ -4,6 +4,7 @@ import { fetchMarketOrderBooksCached } from "../utils/cache";
 import { calculateSpreads } from "../services/marketService";
 import { sendErrorResponse } from "../utils/responseUtils";
 
+// Function for endpoint to get spread for specific market
 export async function getSpread(req: Request, res: Response) {
   try {
     const { id } = req.params;
@@ -19,6 +20,7 @@ export async function getSpread(req: Request, res: Response) {
   }
 }
 
+// Function for endpoint to get spreads for all markets
 export async function getSpreads(req: Request, res: Response) {
   try {
     const spreads = await calculateSpreads();

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { sendErrorResponse } from "../utils/responseUtils";
 import { checkAlerts, checkAlert } from "../services/alertService";
 
-// Function for endpoint to get alerts for all markets
+// Function for endpoint to get alert spreads for all markets
 export async function getAlerts(req: Request, res: Response) {
   try {
     const alertStatus = await checkAlerts();
@@ -24,6 +24,7 @@ export async function getAlerts(req: Request, res: Response) {
   }
 }
 
+// Function for endpoint to get alert spread for specific market
 export async function getAlert(req: Request, res: Response) {
   try {
     const { id } = req.params;

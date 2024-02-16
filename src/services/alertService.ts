@@ -42,6 +42,7 @@ export async function checkAlerts(): Promise<
   }
 }
 
+// Function to check alert for specific market
 export async function checkAlert(id: string) {
   try {
     const spread = await getMarketSpread(id);
@@ -67,6 +68,7 @@ export async function checkAlert(id: string) {
   }
 }
 
+// Function to get alert message for specific market
 function getAlertMessage(spread: number, alertSpread: number | undefined) {
   if (alertSpread === undefined) {
     return {
@@ -87,6 +89,7 @@ function getAlertMessage(spread: number, alertSpread: number | undefined) {
   };
 }
 
+// Function to save alert spread for specific market
 export async function saveAlert(req: Request, res: Response) {
   const { alertSpread } = req.body;
   if (alertSpread) {
@@ -101,10 +104,10 @@ export async function saveAlert(req: Request, res: Response) {
   }
 }
 
-// Define el intervalo de tiempo en milisegundos (por ejemplo, cada 10 segundos)
+// Constant for polling interval in miliseconds
 export const pollingInterval = 10000;
 
-// Función para realizar la consulta de alertas
+// Function to poll alerts for all markets
 export async function pollAlerts() {
   try {
     const response = (await checkAlerts()) as {
@@ -116,7 +119,6 @@ export async function pollAlerts() {
     };
     const alertStatus = response;
     console.log("Spread Alert status:", alertStatus);
-    // Aquí podrías realizar acciones basadas en el estado de las alertas, como enviar notificaciones, etc.
   } catch (error) {
     console.error("Error polling alerts:", error);
   }

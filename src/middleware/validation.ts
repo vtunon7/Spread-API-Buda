@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { getCachedMarketIds } from "../utils/cache";
 
+// Middleware to validate market ID
 export async function validateMarketId(
   req: Request,
   res: Response,
@@ -31,7 +32,7 @@ export async function validateMarketId(
   next();
 }
 
-// Middleware para validar el cuerpo de la solicitud para guardar alerta
+// Middleware to validate alert spread data
 export function validateSaveAlert(
   req: Request,
   res: Response,

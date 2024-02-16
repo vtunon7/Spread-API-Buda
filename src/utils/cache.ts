@@ -1,5 +1,4 @@
 import axios from "axios";
-import { budaURL } from "../config";
 import { fetchMarketIds } from "../services/marketService";
 
 let cachedMarketIds: string[];
@@ -31,7 +30,7 @@ export async function fetchMarketOrderBooksCached(
   } else {
     try {
       const response = await axios.get(
-        `${budaURL}/markets/${marketId}/order_book`
+        `${process.env.BUDA_URL}/markets/${marketId}/order_book`
       );
       const orderBook = response.data.order_book;
       // Actualizar el caché con el nuevo libro de órdenes y la marca de tiempo actual
