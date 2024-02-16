@@ -36,7 +36,7 @@ export function calculateSpread(orderBook: Record<string, string[]>): number {
 }
 
 export async function calculateSpreads(): Promise<{
-  [market: string]: number;
+  [market: string]: { spread: number };
 }> {
   const marketIds = (await getCachedMarketIds()) as string[];
   const orderBookPromises = marketIds.map((marketId: string) =>
@@ -45,7 +45,7 @@ export async function calculateSpreads(): Promise<{
 
   // Fetch market order books in parallel
   const orderBooks = await Promise.all(orderBookPromises);
-  const spreads: { [market: string]: number } = {};
+  const spreads: { [market: string]: { spread: number } } = {};
 
   marketIds.forEach((marketId, i) => {
     const orderBook = orderBooks[i] as Record<string, string[]>;
@@ -55,7 +55,7 @@ export async function calculateSpreads(): Promise<{
     } else {
       spread = calculateSpread(orderBook);
     }
-    spreads[marketId] = spread;
+    spreads[marketId] = { spread };
   });
   return spreads;
 }
