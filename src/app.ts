@@ -1,38 +1,15 @@
 import express, { Request, Response, NextFunction } from "express";
-import bodyParser from "body-parser";
 import { setInterval } from "timers";
-import { getSpread, getSpreads } from "./controllers/spreadController";
-import { saveAlert } from "./services/alertService";
-import { getAlerts, getAlert } from "./controllers/alertController";
-import { validateMarketId, validateSaveAlert } from "./middleware/validation";
 import { pollAlerts, pollingInterval } from "./services/alertService";
 import dotenv from "dotenv";
+import routes from "./routes";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Endpoint to get spread of specific market
-app.get("/markets/:id/spreads", validateMarketId, getSpread);
-
-// Endpoint to get spreads of all markets
-app.get("/markets/spreads", getSpreads);
-
-// Endpoint to save alert spread for every or specific market
-app.post(
-  "/markets/spreads/alert",
-  bodyParser.json(),
-  validateMarketId,
-  validateSaveAlert,
-  saveAlert
-);
-
-// Endpoint to get alert spreads for all markets
-app.get("/markets/spreads/alert", getAlerts);
-
-// Endpoint to get alert spread for specific market
-app.get("/markets/:id/spreads/alert", validateMarketId, getAlert);
+app.use(routes);
 
 // Start polling interval
 setInterval(pollAlerts, pollingInterval);
