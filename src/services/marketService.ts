@@ -19,7 +19,10 @@ export async function fetchMarketIds(): Promise<string[] | undefined> {
 }
 
 // Function to calculate spread from order book
-export function calculateSpread(orderBook: Record<string, string[]>): number {
+export function calculateSpread(orderBook: {
+  asks: string[][];
+  bids: string[][];
+}): number {
   const asks = orderBook.asks;
   const bids = orderBook.bids;
   const asksPrices = asks.map((ask: any) => parseFloat(ask[0]));
@@ -50,7 +53,10 @@ export async function calculateSpreads(): Promise<{
   const spreads: { [market: string]: { spread: number } } = {};
 
   marketIds.forEach((marketId, i) => {
-    const orderBook = orderBooks[i] as Record<string, string[]>;
+    const orderBook = orderBooks[i] as {
+      asks: string[][];
+      bids: string[][];
+    };
     let spread: number;
     if (orderBook.asks.length === 0 || orderBook.bids.length === 0) {
       spread = 0;
@@ -65,7 +71,10 @@ export async function calculateSpreads(): Promise<{
 // Function to get market spread
 export async function getMarketSpread(id: string): Promise<number | undefined> {
   try {
-    const orderBook = await fetchMarketOrderBooksCached(id);
+    const orderBook = (await fetchMarketOrderBooksCached(id)) as {
+      asks: string[][];
+      bids: string[][];
+    };
     if (orderBook) {
       return calculateSpread(orderBook);
     } else {

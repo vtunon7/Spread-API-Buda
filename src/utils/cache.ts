@@ -12,7 +12,7 @@ export async function getCachedMarketIds() {
 
 let orderBookCache: {
   [marketId: string]: {
-    orderBook: Record<string, string[]>;
+    orderBook: { asks: string[][]; bids: string[][] };
     timestamp: number;
   };
 } = {};
@@ -22,7 +22,7 @@ export const CACHE_TTL = 10000; // 10 seconds
 // Función para recuperar el libro de órdenes de un mercado desde el caché o la API
 export async function fetchMarketOrderBooksCached(
   marketId: string
-): Promise<Record<string, string[]> | undefined> {
+): Promise<{ asks: string[][]; bids: string[][] } | undefined> {
   const cachedOrderBook = orderBookCache[marketId];
   // Verificar si el libro de órdenes está en caché y si no ha expirado
   if (cachedOrderBook && Date.now() - cachedOrderBook.timestamp < CACHE_TTL) {
