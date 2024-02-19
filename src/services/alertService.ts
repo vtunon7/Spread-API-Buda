@@ -69,7 +69,10 @@ export async function checkAlert(id: string) {
 }
 
 // Function to get alert message for specific market
-function getAlertMessage(spread: number, alertSpread: number | undefined) {
+export function getAlertMessage(
+  spread: number,
+  alertSpread: number | undefined
+) {
   if (alertSpread === undefined) {
     return {
       spread,
@@ -82,7 +85,7 @@ function getAlertMessage(spread: number, alertSpread: number | undefined) {
     alertSpread,
     message:
       spread === alertSpread
-        ? `Curretn spread EQUALS alert spread (${spread} = ${alertSpread})`
+        ? `Current spread EQUALS alert spread (${spread} = ${alertSpread})`
         : spread > alertSpread
         ? `Current spread BIGGER than alert spread (${spread} > ${alertSpread})`
         : `Current spread LOWER than alert spread (${spread} < ${alertSpread})`,
