@@ -263,7 +263,6 @@ describe("checkAlert", () => {
 
 describe("pollAlerts", () => {
   test("should log spread alert status when there are no errors", async () => {
-    // Arrange
     const alertStatus = {
       market1: {
         spread: 0.01,
@@ -280,16 +279,11 @@ describe("pollAlerts", () => {
     alertSpreads["market1"] = 0.02;
     alertSpreads["market2"] = 0.03;
 
-    // (checkAlerts as jest.Mock).mockResolvedValue(alertStatus);
-
-    // Mock para console.log y console.error
     const logSpy = jest.spyOn(console, "log").mockImplementation();
     const errorSpy = jest.spyOn(console, "error").mockImplementation();
 
-    // Act
     await pollAlerts();
 
-    // Assert
     expect(logSpy).toHaveBeenCalledWith("Spread Alert status:", alertStatus);
     expect(errorSpy).not.toHaveBeenCalled(); // No se espera ningún error en la consola
   });
