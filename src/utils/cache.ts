@@ -1,7 +1,7 @@
 import axios from "axios";
 import { fetchMarketIds } from "../services/marketService";
 
-let cachedMarketIds: string[];
+export let cachedMarketIds: string[];
 
 export async function getCachedMarketIds() {
   if (!cachedMarketIds) {
@@ -10,7 +10,7 @@ export async function getCachedMarketIds() {
   return cachedMarketIds;
 }
 
-let orderBookCache: {
+export let orderBookCache: {
   [marketId: string]: {
     orderBook: { asks: string[][]; bids: string[][] };
     timestamp: number;
