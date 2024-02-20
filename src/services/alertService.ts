@@ -93,17 +93,24 @@ export function getAlertMessage(
 }
 
 // Function to save alert spread for specific market
-export async function saveAlert(req: Request, res: Response) {
-  const { alertSpread } = req.body;
-  if (alertSpread) {
+export async function saveAlert(alertSpread: { [market: string]: number }) {
+  try {
+    if (!alertSpread || Object.keys(alertSpread).length === 0) {
+      throw new Error("No alert spread provided");
+    }
     alertSpreads = { ...alertSpreads, ...alertSpread };
-    res
-      .status(201)
-      .json({ message: "Alert spread saved successfully", alertSpreads });
-  } else {
-    res
-      .status(400)
-      .json({ message: "Invalid request body: alertSpread is required" });
+    return {
+      code: 201,
+      message: "Alert spread saved successfully",
+      alertSpreads,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error saving alert spread:", error.message);
+      return { code: 500, message: error.message };
+    } else {
+      return { code: 500, message: "Error saving alert spread" };
+    }
   }
 }
 
