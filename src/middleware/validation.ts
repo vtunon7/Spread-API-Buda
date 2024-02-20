@@ -8,9 +8,9 @@ export async function validateMarketId(
   next: NextFunction
 ) {
   let marketId: string[];
-  if (req.params.id) {
+  if (req.params && req.params.id) {
     marketId = [req.params.id];
-  } else if (req.body.alertSpread) {
+  } else if (req.body && req.body.alertSpread) {
     marketId = Object.keys(req.body.alertSpread);
   } else {
     return res.status(400).json({
