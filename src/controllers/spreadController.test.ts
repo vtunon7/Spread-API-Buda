@@ -34,7 +34,7 @@ describe("getSpread", () => {
     jest.clearAllMocks();
   });
 
-  it("should return spread for a valid market ID", async () => {
+  test("should return spread for a valid market ID", async () => {
     (fetchMarketOrderBooksCached as jest.Mock).mockResolvedValue(mockOrderBook);
 
     (calculateSpread as jest.Mock).mockReturnValue(0.05);
@@ -55,7 +55,7 @@ describe("getSpread", () => {
     });
   });
 
-  it("should handle error when fetching order book", async () => {
+  test("should handle error when fetching order book", async () => {
     (fetchMarketOrderBooksCached as jest.Mock).mockResolvedValue(undefined);
 
     const req = mockRequest();
@@ -77,7 +77,7 @@ describe("getSpreads", () => {
     jest.clearAllMocks();
   });
 
-  it("should return spreads when calculation is successful", async () => {
+  test("should return spreads when calculation is successful", async () => {
     const mockSpreads = {
       market1: { spread: 0.01 },
       market2: { spread: 0.02 },
@@ -95,7 +95,7 @@ describe("getSpreads", () => {
     expect(res.json).toHaveBeenCalledWith({ market: mockSpreads });
   });
 
-  it("should handle error when calculation fails", async () => {
+  test("should handle error when calculation fails", async () => {
     (calculateSpreads as jest.Mock).mockResolvedValue(undefined);
 
     const res = mockResponse();

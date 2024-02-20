@@ -99,7 +99,7 @@ describe("postAlert", () => {
     };
   });
 
-  it("should handle successful alert spread saving", async () => {
+  test("should handle successful alert spread saving", async () => {
     const saveAlertMock = jest
       .spyOn(alertService, "saveAlert")
       .mockResolvedValue({
@@ -118,7 +118,7 @@ describe("postAlert", () => {
     });
   });
 
-  it("should handle missing alertSpread in request body", async () => {
+  test("should handle missing alertSpread in request body", async () => {
     delete req.body.alertSpread;
 
     await postAlert(req as Request, res as Response);
@@ -129,7 +129,7 @@ describe("postAlert", () => {
     });
   });
 
-  it("should handle error while saving alert spread", async () => {
+  test("should handle error while saving alert spread", async () => {
     const error = new Error("Error saving alert spread");
     const saveAlertMock = jest
       .spyOn(alertService, "saveAlert")

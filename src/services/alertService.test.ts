@@ -18,7 +18,7 @@ jest.mock("./marketService", () => ({
 }));
 
 describe("getAlertMessage", () => {
-  it("should return an object with spread, alertSpread, and message properties when alertSpread is defined", () => {
+  test("should return an object with spread, alertSpread, and message properties when alertSpread is defined", () => {
     const spread = 10;
     const alertSpread = 5;
 
@@ -31,7 +31,7 @@ describe("getAlertMessage", () => {
     });
   });
 
-  it('should return an object with spread, alertSpread, and "No alert spread set for this market" message when alertSpread is undefined', () => {
+  test('should return an object with spread, alertSpread, and "No alert spread set for this market" message when alertSpread is undefined', () => {
     const spread = 10;
     const alertSpread = undefined;
 
@@ -44,7 +44,7 @@ describe("getAlertMessage", () => {
     });
   });
 
-  it('should return an object with message "Current spread EQUALS alert spread" when spread equals alertSpread', () => {
+  test('should return an object with message "Current spread EQUALS alert spread" when spread equals alertSpread', () => {
     const spread = 10;
     const alertSpread = 10;
 
@@ -57,7 +57,7 @@ describe("getAlertMessage", () => {
     });
   });
 
-  it("should return undefined when spread is undefined", () => {
+  test("should return undefined when spread is undefined", () => {
     const spread = undefined;
     const alertSpread = 5;
 
@@ -70,7 +70,7 @@ describe("getAlertMessage", () => {
     });
   });
 
-  it("should return undefined when alertSpread is null", () => {
+  test("should return undefined when alertSpread is null", () => {
     const spread = 10;
     const alertSpread = undefined;
 
@@ -83,7 +83,7 @@ describe("getAlertMessage", () => {
     });
   });
 
-  it("should return undefined when spread is null", () => {
+  test("should return undefined when spread is null", () => {
     const spread = null;
     const alertSpread = 5;
 
@@ -99,7 +99,7 @@ describe("getAlertMessage", () => {
 
 describe("saveAlert", () => {
   let req: Partial<Request>;
-  it("should save alert spread when valid request body is provided", async () => {
+  test("should save alert spread when valid request body is provided", async () => {
     const alertSpread = { "BTC-CLP": 0.5 };
 
     const response = await saveAlert(alertSpread);
@@ -111,7 +111,7 @@ describe("saveAlert", () => {
     });
   });
 
-  it("should return a success message and updated alert spreads when alert spread is saved successfully", async () => {
+  test("should return a success message and updated alert spreads when alert spread is saved successfully", async () => {
     const alertSpread = { "ETH-CLP": 0.3 };
 
     const response = await saveAlert(alertSpread);
@@ -123,7 +123,7 @@ describe("saveAlert", () => {
     });
   });
 
-  it("should return an error message when alert spread is not provided in request body", async () => {
+  test("should return an error message when alert spread is not provided in request body", async () => {
     const response = await saveAlert();
 
     expect(response).toEqual({
@@ -132,7 +132,7 @@ describe("saveAlert", () => {
     });
   });
 
-  it("should overwrite existing alert spread for a specific market when new alert spread is provided", async () => {
+  test("should overwrite existing alert spread for a specific market when new alert spread is provided", async () => {
     const alertSpreads = { "BTC-CLP": 0.2, "ETH-CLP": 0.3 };
     const alertSpread = { "BTC-CLP": 0.8 };
 
