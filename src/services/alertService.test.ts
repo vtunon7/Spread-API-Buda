@@ -98,69 +98,48 @@ describe("getAlertMessage", () => {
 });
 
 describe("saveAlert", () => {
-  // saves alert spread when valid request body is provided
+  let req: Partial<Request>;
   it("should save alert spread when valid request body is provided", async () => {
-    const req = { body: { alertSpread: { "BTC-CLP": 0.5 } } };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    const alertSpread = { "BTC-CLP": 0.5 };
 
-    await saveAlert(req, res);
+    const response = await saveAlert(alertSpread);
 
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
+    expect(response).toEqual({
+      code: 201,
       message: "Alert spread saved successfully",
       alertSpreads: { "BTC-CLP": 0.5 },
     });
   });
 
-  // returns a success message and updated alert spreads when alert spread is saved successfully
   it("should return a success message and updated alert spreads when alert spread is saved successfully", async () => {
-    const req = { body: { alertSpread: { "ETH-CLP": 0.3 } } };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    const alertSpread = { "ETH-CLP": 0.3 };
 
-    await saveAlert(req, res);
+    const response = await saveAlert(alertSpread);
 
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
+    expect(response).toEqual({
+      code: 201,
       message: "Alert spread saved successfully",
       alertSpreads: { "BTC-CLP": 0.5, "ETH-CLP": 0.3 },
     });
   });
 
-  // returns an error message when alert spread is not provided in request body
   it("should return an error message when alert spread is not provided in request body", async () => {
-    const req = { body: {} };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    const response = await saveAlert();
 
-    await saveAlert(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Invalid request body: alertSpread is required",
+    expect(response).toEqual({
+      code: 500,
+      message: "No alert spread provided",
     });
   });
 
-  // overwrites existing alert spread for a specific market when new alert spread is provided
   it("should overwrite existing alert spread for a specific market when new alert spread is provided", async () => {
-    const alertSpreads = { "BTC-CLP": 0.5, "ETH-CLP": 0.3 };
-    const req = { body: { alertSpread: { "BTC-CLP": 0.8 } } };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    const alertSpreads = { "BTC-CLP": 0.2, "ETH-CLP": 0.3 };
+    const alertSpread = { "BTC-CLP": 0.8 };
 
-    await saveAlert(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
+    await saveAlert(alertSpreads);
+    const response = await saveAlert(alertSpread);
+    expect(response).toEqual({
+      code: 201,
       message: "Alert spread saved successfully",
       alertSpreads: { "BTC-CLP": 0.8, "ETH-CLP": 0.3 },
     });
@@ -285,6 +264,6 @@ describe("pollAlerts", () => {
     await pollAlerts();
 
     expect(logSpy).toHaveBeenCalledWith("Spread Alert status:", alertStatus);
-    expect(errorSpy).not.toHaveBeenCalled(); // No se espera ningún error en la consola
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 });
