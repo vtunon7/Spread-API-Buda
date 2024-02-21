@@ -2,7 +2,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import { validateMarketId, validateSaveAlert } from "./middleware/validation";
 import { getSpread, getSpreads } from "./controllers/spreadController";
-// import { saveAlert } from "./services/alertService";
 import { getAlerts, getAlert, postAlert } from "./controllers/alertController";
 
 const router = express.Router();
