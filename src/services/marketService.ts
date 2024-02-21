@@ -3,11 +3,11 @@ import {
   fetchMarketOrderBooksCached,
   getCachedMarketIds,
 } from "../utils/cache";
-import { budaURL } from "../config";
 
+// Function to fetch market IDs from Buda API
 export async function fetchMarketIds(): Promise<string[] | undefined> {
   try {
-    const response = await axios.get(`${budaURL}/markets`);
+    const response = await axios.get(`${process.env.BUDA_URL}/markets`);
     const markets = response.data.markets;
     if (markets) {
       const ids = markets.map((market: any) => market.id);
@@ -18,7 +18,11 @@ export async function fetchMarketIds(): Promise<string[] | undefined> {
   }
 }
 
-export function calculateSpread(orderBook: Record<string, string[]>): number {
+// Function to calculate spread from order book
+export function calculateSpread(orderBook: {
+  asks: string[][];
+  bids: string[][];
+}): number {
   const asks = orderBook.asks;
   const bids = orderBook.bids;
   const asksPrices = asks.map((ask: any) => parseFloat(ask[0]));
@@ -35,8 +39,9 @@ export function calculateSpread(orderBook: Record<string, string[]>): number {
   return spread;
 }
 
+// Function to calculate spreads for all markets
 export async function calculateSpreads(): Promise<{
-  [market: string]: number;
+  [market: string]: { spread: number };
 }> {
   const marketIds = (await getCachedMarketIds()) as string[];
   const orderBookPromises = marketIds.map((marketId: string) =>
@@ -45,24 +50,31 @@ export async function calculateSpreads(): Promise<{
 
   // Fetch market order books in parallel
   const orderBooks = await Promise.all(orderBookPromises);
-  const spreads: { [market: string]: number } = {};
+  const spreads: { [market: string]: { spread: number } } = {};
 
   marketIds.forEach((marketId, i) => {
-    const orderBook = orderBooks[i] as Record<string, string[]>;
+    const orderBook = orderBooks[i] as {
+      asks: string[][];
+      bids: string[][];
+    };
     let spread: number;
     if (orderBook.asks.length === 0 || orderBook.bids.length === 0) {
       spread = 0;
     } else {
       spread = calculateSpread(orderBook);
     }
-    spreads[marketId] = spread;
+    spreads[marketId] = { spread };
   });
   return spreads;
 }
 
+// Function to get market spread
 export async function getMarketSpread(id: string): Promise<number | undefined> {
   try {
-    const orderBook = await fetchMarketOrderBooksCached(id);
+    const orderBook = (await fetchMarketOrderBooksCached(id)) as {
+      asks: string[][];
+      bids: string[][];
+    };
     if (orderBook) {
       return calculateSpread(orderBook);
     } else {

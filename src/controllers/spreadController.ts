@@ -1,32 +1,35 @@
 import { Request, Response } from "express";
-import { calculateSpread } from "../utils/calculateSpread";
+import { calculateSpread } from "../services/marketService";
 import { fetchMarketOrderBooksCached } from "../utils/cache";
 import { calculateSpreads } from "../services/marketService";
+import { sendErrorResponse } from "../utils/responseUtils";
 
+// Function for endpoint to get spread for specific market
 export async function getSpread(req: Request, res: Response) {
   try {
     const { id } = req.params;
     const orderBook = await fetchMarketOrderBooksCached(id);
     if (orderBook) {
       const spread = calculateSpread(orderBook);
-      res.status(200).json({ spread: { [id]: spread } });
+      res.status(200).json({ market: { [id]: { spread } } });
     } else {
-      res.status(500).json({ message: "Error fetching order book" });
+      sendErrorResponse(res, 500, "Error fetching order book");
     }
   } catch (error) {
-    res.status(500).json({ message: "Error fetching order book" });
+    sendErrorResponse(res, 500, "Error fetching order book");
   }
 }
 
+// Function for endpoint to get spreads for all markets
 export async function getSpreads(req: Request, res: Response) {
   try {
     const spreads = await calculateSpreads();
     if (spreads) {
-      res.status(200).json({ spreads });
+      res.status(200).json({ market: spreads });
     } else {
-      res.status(500).json({ message: "Error fetching spreads" });
+      sendErrorResponse(res, 500, "Error fetching spreads");
     }
   } catch (error) {
-    res.status(500).json({ message: "Error fetching spreads" });
+    sendErrorResponse(res, 500, "Error fetching spreads");
   }
 }

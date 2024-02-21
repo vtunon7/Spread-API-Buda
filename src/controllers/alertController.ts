@@ -1,57 +1,82 @@
 import { Request, Response } from "express";
-import { alertSpreads } from "../services/alertService";
-import { calculateSpreads, getMarketSpread } from "../services/marketService";
+import { sendErrorResponse } from "../utils/responseUtils";
+import { checkAlerts, checkAlert, saveAlert } from "../services/alertService";
 
-export async function checkAlerts(req: Request, res: Response) {
+// Function for endpoint to get alert spreads for all markets
+export async function getAlerts(req: Request, res: Response) {
   try {
-    const spreads = await calculateSpreads();
-    if (!spreads) {
-      return sendErrorResponse(res, 500, "Error calculating spreads");
+    const alertStatus = await checkAlerts();
+    if (alertStatus) {
+      res.status(200).json(alertStatus);
+    } else {
+      sendErrorResponse(res, 500, "Error checking alert status");
     }
-    const alertStatus: { [market: string]: string } = {};
-    for (const market in spreads) {
-      alertStatus[market] = getAlertMessage(
-        spreads[market],
-        alertSpreads[market]
-      );
-    }
-    res.status(200).json(alertStatus);
   } catch (error) {
-    sendErrorResponse(res, 500, "Error checking alert status");
-  }
-}
-
-export async function checkAlert(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    const spread = await getMarketSpread(id);
-    if (spread === undefined) {
-      return sendErrorResponse(
+    if (error instanceof Error) {
+      sendErrorResponse(
         res,
         500,
-        "Error fetching or calculating spread"
+        "Error fetching alert spread: " + error.message
       );
+    } else {
+      sendErrorResponse(res, 500, "Error fetching alert spread");
     }
-    const alertSpread = alertSpreads[id];
-    if (alertSpread === undefined) {
-      return sendErrorResponse(res, 400, "No alert spread set for this market");
+  }
+}
+
+// Function for endpoint to get alert spread for specific market
+export async function getAlert(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const alertSpread = await checkAlert(id);
+    if (alertSpread) {
+      res.status(200).json(alertSpread);
+    } else {
+      sendErrorResponse(res, 500, "Error fetching alert spread");
     }
-    const alertMessage = getAlertMessage(spread, alertSpread);
-    res.status(200).json({ [id]: alertMessage });
   } catch (error) {
-    sendErrorResponse(res, 500, "Error checking alert status");
+    if (error instanceof Error) {
+      sendErrorResponse(
+        res,
+        500,
+        "Error fetching alert spread: " + error.message
+      );
+    } else {
+      sendErrorResponse(res, 500, "Error fetching alert spread");
+    }
   }
 }
 
-function sendErrorResponse(res: Response, status: number, message: string) {
-  res.status(status).json({ message });
-}
-
-function getAlertMessage(spread: number, alertSpread: number | undefined) {
-  if (alertSpread === undefined) {
-    return "No alert spread set for this market";
+// Function to post alert spread for specific market
+export async function postAlert(req: Request, res: Response) {
+  try {
+    const { alertSpread } = req.body;
+    if (!alertSpread) {
+      sendErrorResponse(
+        res,
+        400,
+        "Invalid request body: alertSpread is required"
+      );
+      return;
+    }
+    const response = await saveAlert(alertSpread);
+    if (response.code === 201) {
+      res.status(response.code).json({
+        message: response.message,
+        alertSpreads: response.alertSpreads,
+      });
+    } else {
+      sendErrorResponse(res, 500, response.message);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      sendErrorResponse(
+        res,
+        500,
+        "Error saving alert spread: " + error.message
+      );
+    } else {
+      sendErrorResponse(res, 500, "Error saving alert spread");
+    }
   }
-  return spread > alertSpread
-    ? `Current spread (${spread}) BIGGER than alert spread (${alertSpread})`
-    : `Current spread (${spread}) LOWER than alert spread (${alertSpread})`;
 }
