@@ -5,7 +5,7 @@ You can see the documentation [here](https://documenter.getpostman.com/view/1618
 
 You need to create and .env file with the following things:
 
-```
+```TS
 PORT=<PORT> #For example 3000
 BUDA_URL=<BUDA API URL>
 ```
