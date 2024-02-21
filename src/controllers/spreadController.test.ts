@@ -4,13 +4,13 @@ import { calculateSpread, calculateSpreads } from "../services/marketService";
 
 const mockRequest = () => {
   const req: any = {};
-  req.params = { id: "BTC-USD" }; // Simula el parámetro de la solicitud
+  req.params = { id: "BTC-USD" };
   return req;
 };
 const mockResponse = () => {
   const res: any = {};
-  res.status = jest.fn().mockReturnValue(res); // Simula la función de estado
-  res.json = jest.fn().mockReturnValue(res); // Simula la función de JSON
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
   return res;
 };
 

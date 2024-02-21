@@ -17,11 +17,9 @@ describe("getCachedMarketIds", () => {
       .spyOn(marketService, "fetchMarketIds")
       .mockResolvedValue(cachedMarketIds);
 
-    // Llamar a la función getCachedMarketIds dos veces
     const response = await getCachedMarketIds();
     const response2 = await getCachedMarketIds();
 
-    // Verificar que fetchMarketIds no se haya llamado más de una vez
     expect(fetchMarketIdsMock).toHaveBeenCalledTimes(1);
     expect(response).toEqual(cachedMarketIds);
     expect(response2).toEqual(cachedMarketIds);
@@ -46,7 +44,6 @@ describe("fetchMarketOrderBooksCached", () => {
       .spyOn(axios, "get")
       .mockRejectedValueOnce(new Error(errorMessage));
 
-    // Call function
     const result = await fetchMarketOrderBooksCached(marketId);
 
     expect(result).toBeUndefined();
@@ -55,13 +52,12 @@ describe("fetchMarketOrderBooksCached", () => {
 
   test("should fetch order book from API if not available in cache or cache expired", async () => {
     const currentTime = Date.now();
-    const expirationTime = currentTime + 5000; // Simulate cache expired
+    const expirationTime = currentTime + 5000;
     const mockedAxiosGet = jest
       .spyOn(axios, "get")
       .mockResolvedValueOnce({ data: { order_book: mockOrderBook } });
     jest.spyOn(Date, "now").mockReturnValueOnce(expirationTime);
 
-    // Call function
     const result = await fetchMarketOrderBooksCached(marketId);
 
     expect(result).toEqual(mockOrderBook);
@@ -70,16 +66,14 @@ describe("fetchMarketOrderBooksCached", () => {
 
   test("should return order book from cache if available and not expired", async () => {
     const currentTime = Date.now();
-    const expirationTime = currentTime - 5000; // Simulate cache still being valid
+    const expirationTime = currentTime - 5000;
     const mockedAxiosGet = jest
       .spyOn(axios, "get")
       .mockResolvedValueOnce({ data: { order_book: mockOrderBook } });
     jest.spyOn(Date, "now").mockReturnValueOnce(expirationTime);
 
-    // Set cached order book
     orderBookCache[marketId] = cachedOrderBook;
 
-    // Call function
     const result = await fetchMarketOrderBooksCached(marketId);
 
     expect(result).toEqual(mockOrderBook);

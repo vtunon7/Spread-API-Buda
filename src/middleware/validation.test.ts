@@ -89,7 +89,6 @@ describe("validateMarketId", () => {
 });
 
 describe("validateSaveAlert", () => {
-  // Validates alert spread data when test is an object
   test("should validate alert spread data when test is an object", () => {
     const req: Partial<Request> = {
       body: {
@@ -101,7 +100,6 @@ describe("validateSaveAlert", () => {
     validateSaveAlert(req as Request, res as Response, next as NextFunction);
   });
 
-  // Returns a 400 error when alert spread data is missing
   test("should return a 400 error when alert spread data is missing", () => {
     const req: Partial<Request> = {
       body: {},
